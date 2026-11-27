@@ -1,0 +1,2 @@
+mpirun --hostfile /home/ubuntu/hosts --mca oob_tcp_if_include tailscale0 --mca btl_tcp_if_include tailscale0 --mca btl tcp,self --host heat-jad:1 -np 1 /home/ubuntu/heat/build/heat --case 1 --N 1024 --r 0.25 --steps 50 --decomp serial
+decomp=serial P=1 case=1 N=1024 r=0.25 steps=50 T=1.19209e-05 t_total=0.035775 t_comp=0.035759 t_comm=0.000004

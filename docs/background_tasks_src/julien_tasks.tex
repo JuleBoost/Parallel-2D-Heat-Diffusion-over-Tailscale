@@ -1,0 +1,167 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[margin=2.3cm]{geometry}
+\usepackage{amsmath,amssymb,graphicx,booktabs,enumitem}
+\setlength{\parindent}{0pt}\setlength{\parskip}{4pt}
+\newcommand{\task}[2]{\vspace{10pt}{\Large\bfseries Task #1}\ \ {\large(#2)}\par\vspace{4pt}}
+\pagestyle{plain}
+\begin{document}
+\begin{center}
+{\large\bfseries Tasks that require a program}\\[2pt]
+Julien (Tasks 3.5, 4.1, 6.7, 7.2)
+\end{center}
+These Tasks are answered with our results and a short explanation, as the project asks.
+Tasks 6.7 and 7.2 use our solver \texttt{heat} (\texttt{--decomp serial}); 3.5 and 4.1 use short Python scripts.
+
+\task{3.5}{Where does round-off take over?}
+We repeat Task 3.2(c), $D_2 f(1)$ for $f(x)=\sin x$ with $f''(1)=-\sin 1=-0.8414709848$, for
+$h=10^{-1},\dots,10^{-10}$ in double precision.
+
+\begin{minipage}[t]{0.44\textwidth}\vspace{0pt}
+\centering\small
+\begin{tabular}{lll}\toprule
+$h$ & $D_2 f(1)$ & $|D_2f-f''|$\\\midrule
+$10^{-1}$ & $-0.8407699927$ & $7.0\times10^{-4}$\\
+$10^{-2}$ & $-0.8414639726$ & $7.0\times10^{-6}$\\
+$10^{-3}$ & $-0.8414709147$ & $7.0\times10^{-8}$\\
+$10^{-4}$ & $-0.8414709818$ & $3.0\times10^{-9}$\\
+$10^{-5}$ & $-0.8414702268$ & $7.6\times10^{-7}$\\
+$10^{-6}$ & $-0.8415490527$ & $7.8\times10^{-5}$\\
+$10^{-7}$ & $-0.8326672685$ & $8.8\times10^{-3}$\\
+$10^{-8}$ & $-1.1102230246$ & $2.7\times10^{-1}$\\
+$10^{-9}$ & $111.0223024625$ & $1.1\times10^{2}$\\
+$10^{-10}$ & $0$ & $8.4\times10^{-1}$\\\bottomrule
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.53\textwidth}\vspace{0pt}
+\centering\includegraphics[width=\textwidth]{task35.pdf}
+\end{minipage}
+
+\textbf{Where it stops decreasing.} Down to $h=10^{-3}$ the error falls by $100$ per decade
+(order 2, as in Task 3.2). The smallest error, about $3\times10^{-9}$, is reached at
+$h\approx10^{-4}$; for smaller $h$ the error grows again, by about $100$ per decade.
+
+\textbf{Explanation.} Each of the three values $f(x-h), f(x), f(x+h)$ carries a rounding error of
+about $\varepsilon|f|$ with $\varepsilon\approx2.2\times10^{-16}$. In $D_2$ they are combined with
+weights $1,-2,1$ (at most $4\varepsilon|f|$ in total) and then divided by $h^2$. The total error is
+therefore roughly
+\[
+E(h)\approx \frac{h^2}{12}|f^{(4)}| + \frac{4\varepsilon|f|}{h^2},
+\]
+the first term decreasing and the second increasing as $h\to0$. The two balance when
+$h^4 = 48\varepsilon$, i.e. $h_{\text{opt}}\approx(48\varepsilon)^{1/4}\approx3\times10^{-4}$, with
+$E\approx\sqrt{4\varepsilon/3}\,|\!\sin 1|\approx10^{-8}$, matching the measured minimum.
+Compared with a first derivative ($h_{\text{opt}}\approx\sqrt\varepsilon\approx10^{-8}$),
+round-off takes over much earlier because of the division by $h^2$. For $h\le10^{-8}$ the
+numerator is pure rounding noise (at $h=10^{-10}$ the three values are identical in floating point and
+$D_2=0$). Our grids use $h\ge1/8192\approx1.2\times10^{-4}$, so the solver stays in the
+truncation-dominated regime.
+
+\task{4.1}{Experiments with forward Euler}
+Test problem $u'=-\lambda u$, $u(0)=1$, $\lambda=50$, on $[0,1]$, with $\Delta t=1/n$ so that the
+final time is reached exactly. Exact solution $u(1)=e^{-50}\approx1.93\times10^{-22}$.
+
+\textbf{(a) Implementation.} Forward Euler: $u^{n+1}=u^n+\Delta t(-\lambda u^n)=(1-\lambda\Delta t)\,u^n$,
+so $u^n=g^n$ with amplification factor $g=1-\lambda\Delta t$.
+
+\textbf{(b) Largest stable $\Delta t$.}
+\begin{center}\small
+\begin{tabular}{ccccc}\toprule
+$\Delta t$ & $\lambda\Delta t$ & $g=1-\lambda\Delta t$ & $\max_n|u^n|$ & $|u(1)|$\\\midrule
+$1/20=0.0500$ & 2.50 & $-1.50$ & $3.3\times10^{3}$ & $3.3\times10^{3}$\\
+$1/22=0.0455$ & 2.27 & $-1.27$ & $2.0\times10^{2}$ & $2.0\times10^{2}$\\
+$1/24=0.0417$ & 2.08 & $-1.08$ & $6.8$ & $6.8$\\
+$1/25=0.0400$ & 2.00 & $-1.00$ & $1.0$ & $1.0$\\
+$1/26=0.0385$ & 1.92 & $-0.92$ & $1.0$ & $1.2\times10^{-1}$\\
+$1/30=0.0333$ & 1.67 & $-0.67$ & $1.0$ & $5.2\times10^{-6}$\\
+$1/50=0.0200$ & 1.00 & $0$ & $1.0$ & $0$\\\bottomrule
+\end{tabular}
+\end{center}
+For $\Delta t>0.04$ the solution oscillates in sign with growing amplitude; at $\Delta t=0.04$ it
+oscillates between $+1$ and $-1$ without decaying; below $0.04$ it decays. The largest $\Delta t$ that does not
+blow up is therefore $\Delta t=0.04$, exactly the theoretical limit
+$|1-\lambda\Delta t|\le1\iff\Delta t\le2/\lambda=0.04$. Between $1/\lambda=0.02$ and $2/\lambda$
+the solution is stable but oscillates ($g<0$), which the exact solution never does
+(figure, left).
+
+\textbf{(c) First-order convergence.} For a stable $\Delta t$, error at $t=1$. Because $u(1)$ is tiny,
+we also give the relative error.
+\begin{center}\small
+\begin{tabular}{ccccc}\toprule
+$\Delta t$ & $u^n(1)$ & $|e|$ & $|e|/u(1)$ & observed order\\\midrule
+$1.000\times10^{-3}$ & $5.29\times10^{-23}$ & $1.40\times10^{-22}$ & $0.726$ & ---\\
+$5.000\times10^{-4}$ & $1.02\times10^{-22}$ & $9.07\times10^{-23}$ & $0.470$ & 0.63\\
+$2.500\times10^{-4}$ & $1.41\times10^{-22}$ & $5.21\times10^{-23}$ & $0.270$ & 0.80\\
+$1.250\times10^{-4}$ & $1.65\times10^{-22}$ & $2.80\times10^{-23}$ & $0.145$ & 0.90\\
+$6.250\times10^{-5}$ & $1.78\times10^{-22}$ & $1.45\times10^{-23}$ & $0.075$ & 0.95\\
+$3.125\times10^{-5}$ & $1.85\times10^{-22}$ & $7.40\times10^{-24}$ & $0.038$ & 0.97\\\bottomrule
+\end{tabular}
+\end{center}
+Halving $\Delta t$ halves the error once $\Delta t$ is small, and the observed order
+$\log_2(e_{\Delta t}/e_{\Delta t/2})$ tends to $1$: forward Euler is first order. The order only
+approaches 1 for small steps because the error constant is large here:
+$\ln\big((1-\lambda\Delta t)^{1/\Delta t}\big)=-\lambda-\tfrac{\lambda^2\Delta t}{2}+\dots$, so the
+relative error is about $\tfrac{\lambda^2}{2}\Delta t=1250\,\Delta t$, which is small only when
+$\Delta t\ll10^{-3}$.
+
+\textbf{(d) Backward Euler.} $u^{n+1}=u^n+\Delta t(-\lambda u^{n+1})$, i.e.
+$u^{n+1}=u^n/(1+\lambda\Delta t)$, with $g=1/(1+\lambda\Delta t)\in(0,1)$ for every $\Delta t>0$.
+Repeating (b): no step size blows up. Even with $\Delta t=1/5$ ($\lambda\Delta t=10$) the solution
+decays monotonically, $u(1)=6.2\times10^{-6}$, without oscillations. Backward Euler is
+unconditionally stable; large steps cost accuracy (the decay is much too slow, figure right), not
+stability.
+
+\begin{center}\includegraphics[width=0.95\textwidth]{task41.pdf}\end{center}
+
+\task{6.7}{Breaking it on purpose}
+We ran Case 1 with $N=64$ and $r=0.2625$, i.e.\ 5\% above the bound $r\le1/4$ of Task 6.3
+(our program refuses such an $r$; a debug flag \texttt{--force 1} lets it run for this Task).
+
+\begin{center}\includegraphics[width=\textwidth]{task67.pdf}\end{center}
+
+\textbf{Observation.} For about 110 steps the solution looks normal and stays in $[0,1]$.
+The first values outside $[0,1]$ appear at step 114, at the nodes next to the four
+corners (e.g.\ $x\approx0.03$, $y\approx0.95$). From there a checkerboard pattern ($+,-,+,-$ from
+node to node, changing sign at every step) spreads diagonally into the plate. At step 160 the values
+reach $\pm 30$, and at step 300 $\pm1.9\times10^6$, while the correct solution stays between 0 and 1.
+Between steps 200 and 300 the amplitude grows by a factor $1.091$ per step.
+
+\textbf{Explanation.} This is the worst mode of Task 6.3: $\theta=\varphi=\pi$, the checkerboard
+$(-1)^{j+k}$, with $G=1-8r=-1.1$ for $r=0.2625$. Since $G<-1$, the mode flips sign every step and
+grows like $|G|^n$. On the Dirichlet grid the highest mode has $\theta=\varphi=63\pi/64$, giving
+$|G|=8r\sin^2(63\pi/128)-1\approx1.098$, close to the measured $1.091$. The mode is excited most
+strongly at the corners, where the initial data jumps from 0 to 1 over a single node; that sharp
+jump contains the largest amount of the highest-frequency modes, so the instability shows up there
+first. With $r=1/4$ (left panel) the same run is smooth.
+
+\task{7.2}{Convergence study}
+Test V, $u_0=\sin(\pi x)\sin(\pi y)$, $T=0.05$, $r=0.2$ fixed. The program chooses
+$\text{steps}=\lceil T/(rh^2)\rceil$ and $\Delta t=T/\text{steps}$, so $T/\Delta t$ is an
+integer and $r$ is not exceeded (here $T/(rh^2)$ is already an integer, so $r=0.2$ exactly).
+Errors against the exact solution $u=\sin(\pi x)\sin(\pi y)e^{-2\pi^2t}$ at $t=T$,
+$\|e\|_{2,h}=\big(h^2\sum_{i,j}e_{i,j}^2\big)^{1/2}$, $p_{\text{obs}}=\log_2(e_{2h}/e_h)$.
+
+\begin{minipage}[t]{0.58\textwidth}\vspace{0pt}
+\centering\footnotesize\setlength{\tabcolsep}{3pt}
+\begin{tabular}{cccccc}\toprule
+$N$ & $h$ & steps & $\|e\|_\infty$ & $\|e\|_{2,h}$ & $p_{\text{obs}}$\\\midrule
+16 & 0.0625 & 64 & $1.663\times10^{-3}$ & $8.317\times10^{-4}$ & ---\\
+32 & 0.03125 & 256 & $4.142\times10^{-4}$ & $2.071\times10^{-4}$ & 2.01\\
+64 & 0.015625 & 1024 & $1.034\times10^{-4}$ & $5.172\times10^{-5}$ & 2.00\\
+128 & 0.0078125 & 4096 & $2.585\times10^{-5}$ & $1.293\times10^{-5}$ & 2.00\\
+256 & 0.00390625 & 16384 & $6.463\times10^{-6}$ & $3.232\times10^{-6}$ & 2.00\\\bottomrule
+\end{tabular}
+\end{minipage}\hfill
+\begin{minipage}[t]{0.40\textwidth}\vspace{0pt}
+\centering\includegraphics[width=\textwidth]{task72.pdf}
+\end{minipage}
+
+\medskip
+(The observed order is the same for both norms.)
+
+\textbf{(c) Agreement with Task 7.1.} Yes. With $r$ fixed, $\Delta t=rh^2/\alpha$, so the local
+truncation error $\mathcal O(\Delta t)+\mathcal O(h^2)$ of Task 5.5 is $\mathcal O(h^2)$, and we
+predicted order 2 in $h$. Each halving of $h$ divides both error norms by $4.00$, so
+$p_{\text{obs}}=2.00$, and the points lie on the slope-2 line. Since the error also decreases
+steadily without any sign of round-off, this confirms that the serial solver implements the scheme
+correctly; it is the reference for all parallel versions.
+\end{document}

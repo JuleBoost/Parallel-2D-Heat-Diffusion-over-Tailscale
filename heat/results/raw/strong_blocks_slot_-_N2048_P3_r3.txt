@@ -1,0 +1,2 @@
+mpirun --hostfile /home/ubuntu/hosts --mca oob_tcp_if_include tailscale0 --mca btl_tcp_if_include tailscale0 --mca btl tcp,self --map-by slot -np 3 /home/ubuntu/heat/build/heat --case 1 --N 2048 --r 0.25 --steps 50 --decomp blocks
+decomp=blocks P=3 Px=1 Py=3 case=1 N=2048 r=0.25 steps=50 T=2.98023e-06 t_total=0.130853 t_comp=0.125142 t_comm=0.009755

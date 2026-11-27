@@ -1,0 +1,4 @@
+# Open MPI hostfile: one line per VM, slots = number of vCPUs
+heat-julien slots=4
+heat-jad slots=4
+heat-marc slots=4

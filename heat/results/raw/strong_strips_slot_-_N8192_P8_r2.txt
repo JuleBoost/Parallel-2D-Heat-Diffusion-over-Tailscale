@@ -1,0 +1,2 @@
+mpirun --hostfile /home/ubuntu/hosts --mca oob_tcp_if_include tailscale0 --mca btl_tcp_if_include tailscale0 --mca btl tcp,self --map-by slot -np 8 /home/ubuntu/heat/build/heat --case 1 --N 8192 --r 0.25 --steps 50 --decomp strips
+decomp=strips P=8 case=1 N=8192 r=0.25 steps=50 T=1.86265e-07 t_total=10.392115 t_comp=0.514332 t_comm=9.943504
