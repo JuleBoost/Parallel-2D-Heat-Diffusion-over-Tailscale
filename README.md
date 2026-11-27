@@ -1,3 +1,8 @@
+
+
+https://github.com/user-attachments/assets/c0e03fe3-c0ab-4ba5-864a-7de9b86d3ff8
+
+
 # Parallel 2D heat diffusion with MPI over Tailscale
 
 Explicit finite-difference solver for the 2D heat equation `u_t = α (u_xx + u_yy)` on the unit
