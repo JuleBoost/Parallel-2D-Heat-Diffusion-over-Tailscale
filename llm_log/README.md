@@ -10,7 +10,7 @@ All LLM use in this project is recorded here, as the course requires (Section 12
 
 ## Files to put in this folder
 
-- Julien's Claude conversation (complete, every prompt and response): https://claude.ai/share/3701798f-be72-49fb-8b9d-32c1daf044ad . A saved copy of that page (`julien_claude_chat.pdf` or `.html`) goes next to this file.
+- Julien's Claude conversation (complete, every prompt and response): https://claude.ai/share/3701798f-be72-49fb-8b9d-32c1daf044ad . Full text: [`julien_claude_chat.txt`](julien_claude_chat.txt).
 - One export per teammate conversation, named `<member>_<tool>_<date>.*`.
 
 ## Agents and subagents
