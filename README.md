@@ -2,7 +2,14 @@
 
 Explicit finite-difference solver for the 2D heat equation `u_t = α (u_xx + u_yy)` on the unit
 square, with a serial version, a 1D strip decomposition and a 2D block decomposition (MPI).
-Team: Julien Boustany, Jad Allam, Marc Germani.
+
+## Team
+
+| Member | Contribution | Tools used |
+|---|---|---|
+| Julien Boustany | Cluster setup (Tailscale, SSH, Open MPI), solver and MPI code, ping-pong and benchmark runs, performance analysis, Tasks 3.5, 4.1, 6.7 and 7.2, summary report and slides | Multipass, Tailscale, Open MPI, C++/CMake, Python, Claude (Opus 5.5, claude.ai) |
+| Jad Allam | His VM and node setup, background-notes Tasks 1.1 to 5.5 (finite differences, discrete Laplacian, update rule, truncation error) | Multipass, Tailscale, Claude (claude.ai) |
+| Marc Germani | His VM and node setup, background-notes Tasks 6.1 to 8.2 (stability analysis, convergence order, communication model) | Multipass, Tailscale, Claude (claude.ai) |
 
 ## Repository layout
 
@@ -25,6 +32,7 @@ Team: Julien Boustany, Jad Allam, Marc Germani.
 | `heat/results/` | `perf.csv` (291 runs), `raw/` (every run's output), `summary.md`, `figs/` (scaling, model, ping-pong, convergence, Task 6.7) |
 | `docs/` | `background_tasks_final.pdf` (all Tasks), `background_tasks_src/` (scripts and LaTeX for Tasks 3.5, 4.1, 6.7, 7.2); add the summary report and slides here |
 | `llm_log/` | complete logs of all LLM interactions |
+
 
 ## Build (one command)
 
